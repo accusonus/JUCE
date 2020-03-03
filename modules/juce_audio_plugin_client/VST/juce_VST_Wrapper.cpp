@@ -369,6 +369,8 @@ public:
         vstEffect.processDoubleReplacing = (Vst2::AEffectProcessDoubleProc) processDoubleReplacingCB;
 
         vstEffect.flags |= Vst2::effFlagsHasEditor;
+        
+        vstEffect.flags |= Vst2::effFlagsCanMono;
 
         vstEffect.flags |= Vst2::effFlagsCanReplacing;
         if (processor->supportsDoublePrecisionProcessing())
