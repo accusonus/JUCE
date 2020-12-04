@@ -1262,6 +1262,17 @@ void AudioProcessorGraph::prepareToPlay (double sampleRate, int estimatedSamples
 
     clearRenderingSequence();
 
+    // Attention: Adobe megahack! 
+    // Force prepare all nodes here!
+    // Why are we doing this? 
+    // Because Premiere might:
+    //  - Trigger async preparation during render
+    //  - Report the isNonRealtime wrong
+    // This means that processing might start taking place before all nodes are
+    // prepped and ready, without a fallback wait/lock
+    for (auto* node : nodes)
+        node->prepare(sampleRate, estimatedSamplesPerBlock, this, getProcessingPrecision());
+
     if (MessageManager::getInstance()->isThisTheMessageThread())
         handleAsyncUpdate();
     else
