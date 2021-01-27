@@ -2608,7 +2608,9 @@ namespace AAXClasses
         jassert (! pluginIds.contains (pluginID));
         pluginIds.add (pluginID);
 
+        #ifndef JucePlugin_EnhancedAudioSuite_Only
         properties->AddProperty (AAX_eProperty_PlugInID_Native, pluginID);
+        #endif
 
        #if ! (JucePlugin_AAXDisableAudioSuite || JucePlugin_EnhancedAudioSuite)
         properties->AddProperty (AAX_eProperty_PlugInID_AudioSuite,
