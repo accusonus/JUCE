@@ -327,6 +327,13 @@ void AudioProcessor::setPlayHead (AudioPlayHead* newPlayHead)
     playHead = newPlayHead;
 }
 
+#if RANDOM_AUDIO_ACCESS_SUPPORTED
+void AudioProcessor::setRandomAudioReader (AudioFormatReader* const newAudioFormatReader)
+{
+    randomAudioReader = newAudioFormatReader;
+}
+#endif
+
 void AudioProcessor::addListener (AudioProcessorListener* newListener)
 {
     const ScopedLock sl (listenerLock);
@@ -412,6 +419,12 @@ void AudioProcessor::setLatencySamples (int newLatency)
         latencySamples = newLatency;
         updateHostDisplay();
     }
+}
+
+bool AudioProcessor::isHighResolutionParameters(bool initialValue)
+{
+    static bool isHighResolutionParams = initialValue;
+    return isHighResolutionParams;
 }
 
 //==============================================================================
@@ -549,6 +562,44 @@ void AudioProcessor::processBypassed (AudioBuffer<floatType>& buffer, MidiBuffer
 
 void AudioProcessor::processBlockBypassed (AudioBuffer<float>&  buffer, MidiBuffer& midi)    { processBypassed (buffer, midi); }
 void AudioProcessor::processBlockBypassed (AudioBuffer<double>& buffer, MidiBuffer& midi)    { processBypassed (buffer, midi); }
+
+void AudioProcessor::analyseBlock (const AudioBuffer<const float>& buffer)
+{
+    ignoreUnused (buffer);
+    // If you hit this assertion then you've got analysis called but you haven't implement required callbacks.
+    jassertfalse;
+}
+
+void AudioProcessor::analyseBlock (const AudioBuffer<const double>& buffer)
+{
+    ignoreUnused (buffer);
+
+    // If you hit this assertion then either the caller called the double
+    // precision version of analyseBlock on a processor which does not support it
+    // (i.e. supportsDoublePrecisionProcessing() returns false), or the implementation
+    // of the AudioProcessor forgot to override the double precision version of this method
+    jassertfalse;
+}
+
+void AudioProcessor::prepareToAnalyse (double sampleRate, int maximumExpectedSamplesPerBlock, int numOfExpectedInputs)
+{
+    ignoreUnused (sampleRate, maximumExpectedSamplesPerBlock, numOfExpectedInputs);
+    // If you hit this assertion then you've got analysis called but you haven't implement required callbacks.
+    jassertfalse;
+};
+
+#if JucePlugin_EnhancedAudioSuite
+void AudioProcessor::getOfflineRenderOffset (int& startOffset, int& endOffset)
+{
+    startOffset = endOffset = 0;
+}
+#endif
+
+void AudioProcessor::analysisFinished ()
+{
+    // If you hit this assertion then you've got analysis called but you haven't implement required callbacks.
+    jassertfalse;
+};
 
 void AudioProcessor::processBlock (AudioBuffer<double>& buffer, MidiBuffer& midiMessages)
 {
